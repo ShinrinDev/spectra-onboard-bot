@@ -5,7 +5,7 @@ const cors = require("cors");
 const axios = require("axios");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -107,7 +107,10 @@ app.post("/chat", async (req, res) => {
     session.currentQuestion += 1;
     res.json({ message: `${welcomeMessage} ${firstQuestion}` });
     return;
-  } else if (message.toLowerCase().trim() !== "hi" && session.currentQuestion === 0) {
+  } else if (
+    message.toLowerCase().trim() !== "hi" &&
+    session.currentQuestion === 0
+  ) {
     res.json({ message: "Type 'Hi' to activate the bot." });
     return;
   }
@@ -128,7 +131,7 @@ app.post("/chat", async (req, res) => {
       message: "Thank you for completing the onboarding!",
       questions: questions,
       answers: userAnswers,
-      isComplete: true
+      isComplete: true,
     });
     return;
   }
