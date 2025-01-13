@@ -100,14 +100,14 @@ app.post("/chat", async (req, res) => {
   const session = userSessions[userId];
 
   // Handle the initial "Hi" message
-  if (message.toLowerCase() === "hi" && session.currentQuestion === 0) {
+  if (message.toLowerCase().trim() === "hi" && session.currentQuestion === 0) {
     const welcomeMessage =
       "Welcome to the onboarding process! Let's get started.";
     const firstQuestion = questions[session.currentQuestion];
     session.currentQuestion += 1;
     res.json({ message: `${welcomeMessage} ${firstQuestion}` });
     return;
-  } else if (message.toLowerCase() !== "hi" && session.currentQuestion === 0) {
+  } else if (message.toLowerCase().trim() !== "hi" && session.currentQuestion === 0) {
     res.json({ message: "Type 'Hi' to activate the bot." });
     return;
   }
@@ -119,10 +119,15 @@ app.post("/chat", async (req, res) => {
 
   // Check if all questions are answered
   if (session.currentQuestion >= questions.length) {
+    const userAnswers = session.answers;
+
+    // Clear the session data for the user
+    delete userSessions[userId];
+
     res.json({
       message: "Thank you for completing the onboarding!",
       questions: questions,
-      answers: session.answers,
+      answers: userAnswers,
       isComplete: true
     });
     return;
